@@ -1,0 +1,15 @@
+first we get message in the slack like,please build this project with commit id.if commit id not given just confirm it from developer which we want to build or go blindly to recent commit.
+after the message,you go to bitbucket tab here you search your project and give a new tag for a given commit-id
+after that same tag or version whatever you given here that will give to next steps where it required.
+now we want to build this commit,so we go to aws console.
+first go to aws console where you choose Developer tools,in which you select code-build section.
+when you select a code-build option you get projects if already have.
+here you search your project and click on it.
+after it open,you click on "build with override"option.
+after that i am doing only two things that's,first i past tag or new version in the source version tab,this tag or version we get from bitbucket version control tool.
+after given source version,click on environment variables we should give same tag or version in the replace of "latest".
+finaly click on "start build" that's it.
+after successfully complited build,next we go to visual-studio code where we give same tag or version in chart.yaml and values.yaml of corresponding project and save the new changes(ctrl+s).
+now we should upgrade it with command help like "helm3 upgrade projectname projectname".
+after upgrade command we give watch command to watch "watch kubectl get pods",here old pod will terminate and new pod will create.
+finaly you confirms in the slack that build has upgraded.
