@@ -1,0 +1,261 @@
+apt update -y
+apt install docker.io -y
+docker ps   (permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock).
+whoami (ubuntu not connecting so we seen that above line).
+sudo chown ubuntu /var/run/docker.sock  (we giving permission to user 'ubuntu')
+now clone the code from git hub (https://github.com/LondheShubham153/two-tier-flask-app.git)
+cd two-tier-flask-app (now go to that project dir)
+vi Dockerfile
+FROM python:3.9-slim
+
+WORKDIR /app
+
+RUN apt-get update -y \
+   && apt-get upgrade -y \
+   && apt-get install -y gcc default-libmysqlclient-dev pkg-config \
+   && rm -rf /var/lib/apt/lists/*
+   
+COPY requirements.txt .
+
+RUN pip install mysqlclient
+RUN pip install -r requirements.txt
+
+COPY . .
+
+CMD ["python","app.py"]
+   
+docker build . -t flaskapp
+docker images
+docker run -d -p 5000:5000 flaskapp:latest
+docker run -d -p 3306:3306 --name mysql -e MYSQL_ROOT_PASSWORD="admin" mysql:5.7
+docker ps
+browse ec2-ip with port
+for connecting ec2 and database we required network for that apply bellow cmd
+docker network create twotier
+we want to give this network for both cntainers so now we kill both the containers and 
+docker kill id
+
+docker run -d --name flaskapp --network=twotier -e MYSQL_HOST=mysql -e MYSQL_USER=admin -e MYSQL_PASSWORD=admin -e MYSQL_DB=mydb -p 5000:5000 flaskapp:latest
+
+docker run -d --name mysql --network=twotier -e MYSQL_DATABASE=mydb -e MYSQL_USER=admin -e MYSQL_PASSWORD=admin -e MYSQL_ROOT_PASSWORD=admin -p 3360:3360 --name=mysql mysql:5.7
+
+
+docker run -d --name mysql --network=twotier -e MYSQL_DATABASE=mydb -e MYSQL_USER=admin -e MYSQL_PASSWORD=admin -e MYSQL_ROOT_PASSWORD=admin -p 3360:3360 --name=mysql mysql:5.7
+
+
+
+docker network ls
+docker network inspect twotier
+docker ps
+docker exec -it 775c bash
+ls
+mysql -u root -p
+admin
+show databases;
+myDb   (we can seen)
+
+use mydb;
+
+CREATE TABLE messages (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    message TEXT
+);
+
+select * from messages; 
+
+docker login
+
+docker hub credentials:
+
+msshoaib2255457 
+177y1a0464
+
+docker tag flaskapp:latest msshoaib2255457/flaskapp:latest
+
+docker push msshoaib2255457/flaskapp:latest
+
+sudo apt install docker-compose
+
+vi docker-compose
+
+version: '3'
+services:
+  backend:
+    image: msshoaib2255457/flaskapp:latest
+    ports:
+     - "5000:5000"
+    environment:
+      MYSQL_HOST: "mysql"
+      MYSQL_USER: "admin"
+      MYSQL_PASSWORD: "admin"
+      MYSQL_DB: "mydb"
+    depends_on:
+     - mysql
+  mysql:
+   image: mysql:5.7
+   environment:
+      MYSQL_USER: "admin"
+      MYSQL_PASSWORD: "admin"
+      MYSQL_DB: "myDb"
+      MYSQL_ROOT_PASSWORD: "admin"
+   ports:
+    - "3306:3306"    
+   volumes:
+     - ./message.sql:/docker-entrypoint-initdb.d/message.sql
+     - mysql-data:/var/lib/mysql
+volumes:
+  mysql-data: 
+  
+
+first here we kill previous containers which is running on 5000,3306 ports.
+
+docker kill 66a4ca0
+docker kill 922782868
+
+docker rm 66a4ca 922782868
+
+docker-compose up -d
+docker ps
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Use an official Python runtime as the base image
+FROM python:3.9-slim
+
+# Set the working directory in the container
+WORKDIR /app
+
+# install required packages for system
+RUN apt-get update \
+    && apt-get upgrade -y \
+    && apt-get install -y gcc default-libmysqlclient-dev pkg-config \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy the requirements file into the container
+COPY requirements.txt .
+
+# Install app dependencies
+RUN pip install mysqlclient
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy the rest of the application code
+COPY . .
+
+# Specify the command to run your application
+CMD ["python", "app.py"]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
